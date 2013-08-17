@@ -1748,14 +1748,14 @@ def input_loop():
             if sys.stdin.isatty():
                 line = raw_input(mpstate.rl.prompt)
             else:
-                # we're not running on a tty: use stdin/stdout to allow pipes
-                # output the prompt if most recent input line was not empty
+                # We're not running on a tty: use stdin/stdout to allow pipes.
+                # Output the prompt if most recent input line was not empty.
                 if mpstate.rl.line:
                     sys.stdout.write(mpstate.rl.prompt)
                     sys.stdout.write("\n") 
-                # read next command, if any, from stdin
+                # Read next command, if any, from stdin.
                 line = sys.stdin.readline()
-        except EOFError:
+        except (EOFError, KeyboardInterrupt) as ex:
             mpstate.status.exit = True
             sys.exit(1)
         mpstate.rl.line = line
@@ -1966,9 +1966,5 @@ Auto-detected serial ports are:
 
     # use main program for input. This ensures the terminal cleans
     # up on exit
-    try:
-        input_loop()
-    except KeyboardInterrupt:
-        print("exiting")
-        mpstate.status.exit = True
-        sys.exit(1)
+    input_loop()
+
