@@ -1745,7 +1745,16 @@ def input_loop():
         while mpstate.rl.line is not None:
             time.sleep(0.01)
         try:
-            line = raw_input(mpstate.rl.prompt)
+            if sys.stdin.isatty():
+                line = raw_input(mpstate.rl.prompt)
+            else:
+                # we're not running on a tty: use stdin/stdout to allow pipes
+                # output the prompt if most recent input line was not empty
+                if mpstate.rl.line:
+                    sys.stdout.write(mpstate.rl.prompt)
+                    sys.stdout.write("\n") 
+                # read next command, if any, from stdin
+                line = sys.stdin.readline()
         except EOFError:
             mpstate.status.exit = True
             sys.exit(1)
